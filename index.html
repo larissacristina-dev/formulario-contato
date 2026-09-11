@@ -18,9 +18,7 @@
            
             <input type="hidden" name="access_key" value="29363aba-ae39-43eb-a388-232573a24cbc">
 
-           
-            <input type="hidden" name="redirect" value="obrigada.html">
-
+          
             <input type="checkbox" name="botcheck" style="display: none;">
 
             <div class="campo-grupo">
@@ -67,7 +65,7 @@
             e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
         });
 
-       
+        // 2. Validação visual em tempo real (E-mail)
         const inputEmail = document.getElementById('email');
         inputEmail.addEventListener('blur', function () {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,7 +93,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                  
+                    
                     window.location.href = "obrigada.html";
                 } else {
                     alert("Erro ao enviar: " + (data.message || "Verifique os dados preenchidos."));
