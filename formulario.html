@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Contato</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Formulário de Contato</h1>
+        <p class="subtitulo">Preencha todos os campos.</p>
+        <hr class="divisor">
+
+        <!-- Mensagem de Sucesso (inicialmente oculta) -->
+        <div id="mensagem-sucesso" class="mensagem-sucesso" style="display: none;">
+            Formulário enviado com sucesso!
+        </div>
+
+        <form id="meuFormulario" action="https://api.web3forms.com/submit" method="POST">
+            
+            <!-- SUA ACCESS KEY -->
+            <input type="hidden" name="access_key" value="29363aba-ae39-43eb-a388-232573a24cbc">
+
+            <!-- Campo Honeypot Anti-Spam (invisível para humanos) -->
+            <input type="checkbox" name="botcheck" style="display: none;">
+
+            <div class="campo-grupo">
+                <label for="nome">Nome :</label>
+                <input type="text" id="nome" name="nome" placeholder="Nome completo" required>
+            </div>
+
+            <div class="campo-grupo">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" placeholder="E-mail Válido." required>
+            </div>
+
+            <div class="campo-grupo">
+                <label for="telefone">Telefone :</label>
+                <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" maxlength="15" required>
+            </div>
+
+            <div class="campo-grupo">
+                <label for="assunto">Assunto :</label>
+                <select id="assunto" name="assunto" required>
+                    <option value="" disabled selected></option>
+                    <option value="Dúvida">Dúvida</option>
+                    <option value="Sugestão">Sugestão</option>
+                    <option value="Orçamento">Orçamento</option>
+                </select>
+            </div>
+
+            <div class="campo-grupo">
+                <label for="mensagem">Mensagem :</label>
+                <textarea id="mensagem" name="mensagem" placeholder="Sua mensagem" required></textarea>
+            </div>
+
+            <div class="botao-grupo">
+                <button type="submit" class="btn-enviar" id="btnEnviar">Enviar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 1. Máscara para o campo de Telefone/WhatsApp
+        const inputTelefone = document.getElementById('telefone');
+        inputTelefone.addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+
+        // 2. Validação visual em tempo real (E-mail)
+        const inputEmail = document.getElementById('email');
+        inputEmail.addEventListener('blur', function () {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value && !emailRegex.test(this.value)) {
+                this.classList.add('invalido');
+            } else {
+                this.classList.remove('invalido');
+            }
+        });
+
+        // 3. Envio via Web3Forms (Plano Gratuito)
+        document.getElementById('meuFormulario').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const btn = document.getElementById('btnEnviar');
+            btn.innerText = 'Enviando...';
+            btn.disabled = true;
+
+            const formData = new FormData(this);
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const msgSucesso = document.getElementById('mensagem-sucesso');
+                    msgSucesso.style.display = 'block';
+                    this.reset();
+
+                    setTimeout(() => {
+                        msgSucesso.style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert("Erro ao enviar: " + (data.message || "Verifique os dados preenchidos."));
+                }
+            })
+            .catch(error => {
+                alert("Erro na conexão ao enviar o formulário.");
+            })
+            .finally(() => {
+                btn.innerText = 'Enviar';
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
